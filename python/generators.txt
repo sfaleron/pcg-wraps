@@ -1,0 +1,40 @@
+# Supported PCG variants
+
+# The "extended" generators are not supported. There is also no support
+# for custom generators with alternate permutation schemes or constants.
+
+# The rest of the "canonical" (listed on the documentation page of the
+# website: http://www.pcg-random.org/using-pcg-cpp.html) generators are
+# supported. They are listed in the same order as on the website, in two
+# lists, depending on whether streams are supported.
+
+# Lines starting with hash marks are comments, and blanks are ignored.
+
+# Blocks of lines may be commented out by preceeding with "-" on a line
+# by itself, and optionally followed with a "+" to resume. If omitted,
+# the rest of the file will be ignored.
+
+# You may also buy Melissa a beer (or other libation) if you are ever
+# around Harvey Mudd college.
+
+# Cheers!
+
+# supports multiple streams
+
+pcg32
+
+pcg8_once_insecure
+pcg16_once_insecure
+pcg32_once_insecure
+pcg64_once_insecure
+
+# single stream only
+
+pcg32_oneseq
+pcg32_unique
+pcg32_fast
+
+pcg8_oneseq_once_insecure
+pcg16_oneseq_once_insecure
+pcg32_oneseq_once_insecure
+pcg64_oneseq_once_insecure
