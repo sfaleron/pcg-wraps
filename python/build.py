@@ -38,7 +38,7 @@ with open('../generators.txt', 'r') as fvar:
 
         opts['PCGx'] = generator
         opts['SWIGOPTS'] = ('-DGETSET' if GETSET else '') + \
-            ('-DSTREAMS' if STREAMS and stream_check(generator) else '')
+            (' -DSTREAMS' if STREAMS and stream_check(generator) else '')
 
         for filename in templates:
             with open(osp.join('../templates', filename), 'r') as fin:
@@ -49,6 +49,7 @@ with open('../generators.txt', 'r') as fvar:
 
                     fout.write(s)
 
+        print(opts)
         print('\n', generator)
         os.chdir('..')
         exthdlr(['/bin/sh', 'build/make.sh'])

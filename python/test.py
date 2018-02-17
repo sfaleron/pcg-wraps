@@ -10,9 +10,10 @@ from opts import GETSET
 from streams import stream_check
 
 def run(*args):
-    args = (42,)+args
+    pcg  = args[0]
+    args = (42,)+args[1:]
 
-    m = import_module(*args)
+    m = import_module(pcg)
     constructor = getattr(m, 'generator')
 
     if GETSET:

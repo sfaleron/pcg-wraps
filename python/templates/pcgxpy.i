@@ -1,10 +1,10 @@
 
-//#define MASK1
-//#define MASK2
-//#define MASK3
-//#define MASK4
-//#define MASK5
-//#define MASK6
+#define MASK1
+#define MASK2
+#define MASK3
+#define MASK4
+#define MASK5
+#define MASK6
 #define MASK7
 
 //#define MINI
@@ -93,14 +93,7 @@ void set_state(T& rng, const char *state)
 
 %rename("generator") [PCGx];
 
-#ifdef MINI
-class [PCGx] {
-public:
-%extend {
-}
-};
-#endif
-#ifdef MASK7
+#ifndef MASKCLASS
 class [PCGx] {
     public:
 #ifdef MASK1

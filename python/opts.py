@@ -1,9 +1,9 @@
 
-#STREAMS = True
-STREAMS = False
+STREAMS = True
+#STREAMS = False
 
-GETSET = False
-#GETSET = True
+#GETSET = False
+GETSET = True
 
 opts = {
     #'PYVER'   : '2.7',
