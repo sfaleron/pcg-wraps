@@ -37,6 +37,10 @@
 %#endif
 }
 
+%pythonbegin %{
+import sys
+%}
+
 %header %{
 
 #include <iostream>
@@ -125,9 +129,16 @@ class [PCGx] {
 
         def __ne__(self, other):
             return test_inequality(self, other)
+%}
 
+#ifdef GETSET
+%pythoncode %{
         def __str__(self):
-            return get_state(self)
+            bytes = get_state(self)
+            if sys.version_info[0]==2:
+                bytes = map(ord, bytes)
+
+            return ''.join(['%02x' % (i,) for i in bytes])
 
         def get_state(self):
             return get_state(self)
@@ -145,9 +156,10 @@ class [PCGx] {
             self.__init__()
             self.set_state(state)
 %}
-
+#endif
 };
 
+#ifdef GETSET
 %inline %{
 
 template <typename T>
@@ -170,6 +182,7 @@ void set_state(T& rng, const char *state)
 
 %template(get_state) get_state<[PCGx]>;
 %template(set_state) set_state<[PCGx]>;
+#endif
 
 // operator overloading at module/global level does not translate to python
 // also, the new names are only visible in the Python code
@@ -182,6 +195,7 @@ bool operator!=(const [PCGx]& lhs, const [PCGx]& rhs);
 %rename("subtract") operator-;
 [PCGx]::state_type operator-(const [PCGx]& lhs, const [PCGx]& rhs);
 
+#ifdef GETSET
 %pythoncode %{
 import random
 
@@ -204,3 +218,21 @@ class Random(random.Random):
     def setstate(self, state):
         return self._rng.set_state(state)
 %}
+#else
+%pythoncode %{
+import random
+
+class AlmostRandom(random.Random):
+    def __init__(self, *args):
+        self._rng = [PCGx](*args)
+
+    def seed(self, *args):
+        self._rng.seed(*args)
+
+    #def getrandbits(self):
+    #    pass
+
+    def random(self):
+        return self._rng.next_as_float()
+%}
+#endif

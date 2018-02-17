@@ -1,10 +1,20 @@
 # hide the ugly stuff!
 from subcmd import exthdlr
 
-from streams import stream_check
 from opts import *
 import test
 import sys
+
+
+with open('hasstreams.txt', 'r') as f:
+    hasstreams = set()
+    f.readline()
+    for line in f:
+        hasstreams.add(line.strip())
+
+def stream_check(s):
+    return s in hasstreams
+
 
 # strings of zeros or ones of total length equal to the
 # number of generators (12, 18 with 128 bit state generators)
@@ -42,6 +52,9 @@ with open('../generators.txt', 'r') as fvar:
 
         if  STREAMS and stream_check(generator):
             opts['SWIGOPTS'] += ' -DSTREAMS'
+
+        if  GETSET:
+            opts['SWIGOPTS'] += ' -DGETSET'
 
         for filename in templates:
             with open(osp.join('../templates', filename), 'r') as fin:

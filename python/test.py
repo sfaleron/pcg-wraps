@@ -3,24 +3,30 @@ from __future__ import print_function
 from importlib import import_module
 import pickle
 
+from opts import GETSET
+
 def run(*args):
-    pcg  = args[0]
+    generator  = args[0]
     args = (42,)+args[1:]
 
-    m = import_module(pcg)
+    m = import_module(generator)
     constructor = getattr(m, 'generator')
+    print(m.info)
 
     # seeding at or after instantiation
     rng1 = constructor(*args)
     rng2 = constructor()
-    print(rng1==rng2, rng1!=rng2)
+    print(rng1==rng2, rng2==rng1)
     rng2.seed(*args)
-    print(rng1==rng2, rng1!=rng2)
+    print(rng1==rng2, rng2==rng1)
+
+    if GETSET:
+        print(rng2)
 
     # copy constructor
     rng3 = constructor(rng2)
     print(rng2==rng3); rng3.discard(1)
-    print(rng2==rng3, rng2!=rng3)
+    print(rng2==rng3, rng3==rng2)
 
     # generatotr characteristics
     print('bits:', rng1.bits)
@@ -30,37 +36,45 @@ def run(*args):
 
     # get some random ints or floats, compare
     print(rng1.next_as_float(), rng2())
-    print(rng2==rng2, rng1!=rng2)
+    print(rng2==rng2, rng1==rng2)
 
     rng1.backstep(1); rng2.backstep(1)
 
     print(rng1(), rng2.next_as_float())
-    print(rng2==rng2, rng1!=rng2)
+    print(rng2==rng2, rng2==rng1)
 
     print(rng1(1000), rng2(1000))
-    print(rng2==rng2, rng1!=rng2)
+    print(rng2==rng2, rng2==rng1)
 
     # subtract returns how much to advance rhs.. so is that equal
-    # to backtracking lhs? note that these take unsighned arguments!
-    print('period:', 2**rng1.period_pow2())
+    # to backtracking lhs? note that these take unsigned arguments!
+
 
     rng2.seed(*args)
     one2 = rng1-rng2
     two1 = rng2-rng1
-    print(one2, two1)
+    period = 2**rng1.period_pow2()
 
-    state = rng1.get_state()
+    print(one2+two1==period)
+
+    if GETSET:
+        state = rng1.get_state()
+    else:
+        rng3 = constructor(rng1)
 
     rng2.advance(one2)
-    print(rng1==rng2, rng1!=rng2)
+    print(rng1==rng2, rng2==rng1)
 
     rng2.seed(*args)
 
-    rng1.set_state(state)
+    if GETSET:
+        rng1.set_state(state)
+    else:
+        rng1 = rng3
 
     one2 = rng1-rng2
     two1 = rng2-rng1
     print(one2, two1)
 
-    rng1.backstep(two1)
-    print(rng1==rng2, rng1!=rng2)
+    rng1.backstep(period-two1)
+    print(rng1==rng2, rng2==rng1)
