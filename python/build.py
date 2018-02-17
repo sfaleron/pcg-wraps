@@ -1,33 +1,43 @@
+import os.path as osp
+import shutil
+import sys
+import os
+
+from importlib import import_module
+
+sys.path.append('support')
+d=osp.abspath(osp.dirname(__file__))
+sys.path.append(d)
+print(d)
+
 # hide the ugly stuff!
 from subcmd import exthdlr
 
 from opts import *
-import test
-import sys
+import pcgtests as test
 
-
-with open('hasstreams.txt', 'r') as f:
+with open(osp.join('support', 'hasstreams.txt'), 'r') as f:
     hasstreams = set()
     f.readline()
     for line in f:
         hasstreams.add(line.strip())
 
 
-# strings of zeros or ones of total length equal to the
-# number of generators (12, 18 with 128 bit state generators)
-mask = ''.join(sys.argv[1:])
-
-import os.path as osp
-import os
-
 templates = os.listdir('templates')
 
-os.chdir('build')
+if osp.exists('pcgrng'):
+    shutil.rmtree('pcgrng')
 
-with open('../generators.txt', 'r') as fvar:
+os.mkdir('pcgrng')
+
+with open(osp.join('pcgrng', '__init__.py'), 'w') as fmain:
+    fmain.write('generators = {}\n')
+
+os.chdir('pcgrng')
+
+with open('../generators.txt', 'r') as fgens:
     masked = False
-    i = 0
-    for line in fvar:
+    for line in fgens:
         generator = line.strip()
         if not generator or generator.startswith('#'):
             continue
@@ -37,10 +47,6 @@ with open('../generators.txt', 'r') as fvar:
             continue
 
         if masked:
-            continue
-
-        if not int(mask[i]):
-            i += 1
             continue
 
         opts['PCGx'] = generator
@@ -53,9 +59,14 @@ with open('../generators.txt', 'r') as fvar:
         if  GETSET:
             opts['SWIGOPTS'] += ' -DGETSET'
 
+        os.mkdir(generator)
+
+        with open('__init__.py', 'a') as fmain:
+            fmain.write("from . import {0}\ngenerators['{0}']={0}\n".format(generator))
+
         for filename in templates:
             with open(osp.join('../templates', filename), 'r') as fin:
-                with open(filename, 'w') as fout:
+                with open(osp.join(generator, filename), 'w') as fout:
                     s = fin.read()
                     for key, value in opts.items():
                         s = s.replace('[{}]'.format(key), value)
@@ -64,12 +75,20 @@ with open('../generators.txt', 'r') as fvar:
 
         print(opts)
         print('\n', generator)
-        os.chdir('..')
-        exthdlr(['/bin/sh', 'build/make.sh'])
+        exthdlr(['/bin/sh', osp.join(generator, 'make.sh')])
 
-        test.run(generator)
+        m = import_module('pcgrng.'+generator)
+
+        test.run(m)
+
         if generator in hasstreams:
-            test.run(generator, 137)
+            test.run(m, 137)
 
-        os.chdir('build')
-        i += 1
+        for filename in templates:
+            os.remove(osp.join(generator, filename))
+
+        for filename in ['pcggen_wrap.'+i for i in ('cxx', 'o')]:
+            if not filename.startswith('__'):
+                os.remove(filename)
+
+

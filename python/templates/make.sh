@@ -1,11 +1,7 @@
 
-mkdir -p [PCGx]
+swig -c++ -python [SWIGOPTS] -outdir [PCGx] -o pcggen_wrap.cxx [PCGx]/pcgxpy.i
 
-swig -Wall -c++ -python [SWIGOPTS] -outdir [PCGx] -o build/pcggen_wrap.cxx build/pcgxpy.i
+g++ -Wall -O2 -fPIC -std=c++11 -I../[PCGHEADERS] -o pcggen_wrap.o \
+    -I[PYHEADERS] -c pcggen_wrap.cxx
 
-mv build/__init__.py [PCGx]
-
-g++ -Wall -O2 -fPIC -std=c++11 -I../../include -o build/pcggen_wrap.o \
-    -I[PYHEADERS] -c build/pcggen_wrap.cxx
-
-g++ -shared build/pcggen_wrap.o -o [PCGx]/_[PCGx].so
+g++ -shared pcggen_wrap.o -o [PCGx]/_[PCGx].so

@@ -1,17 +1,15 @@
 from __future__ import print_function
 
-from importlib import import_module
 import pickle
 
 from opts import GETSET
 
 def run(*args):
-    generator  = args[0]
-    args = (42,)+args[1:]
-
-    m = import_module(generator)
-    constructor = getattr(m, 'generator')
+    m = args[0]
     print(m.info)
+    constructor = m.generator
+
+    args = (42,)+args[1:]
 
     # seeding at or after instantiation
     rng1 = constructor(*args)
@@ -28,7 +26,7 @@ def run(*args):
     print(rng2==rng3); rng3.discard(1)
     print(rng2==rng3, rng3==rng2)
 
-    # generatotr characteristics
+    # generator characteristics
     print('bits:', rng1.bits)
     print('range:', rng1.min(), rng2.max())
     print('base-two logarithm of period:', rng1.period_pow2())
@@ -48,7 +46,6 @@ def run(*args):
 
     # subtract returns how much to advance rhs.. so is that equal
     # to backtracking lhs? note that these take unsigned arguments!
-
 
     rng2.seed(*args)
     one2 = rng1-rng2
