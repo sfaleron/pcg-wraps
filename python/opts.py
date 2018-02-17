@@ -1,15 +1,13 @@
+STREAMS   = True
+SWIGOPTS  = ''
+PYHEADERS = '/usr/include/python3.6m'
 
-STREAMS = True
-#STREAMS = False
+import sys
 
-#GETSET = False
-GETSET = True
-
-opts = {
-    #'PYVER'   : '2.7',
-    #'PYCMD'   : 'python2',
-    'PYVER'   : '3.6m',
-    'PYCMD'   : 'python',
-    'SWIGOPTS' : None,
-    'PCGx'    : None
-}
+# sets a useful default if evaluates as false
+opts = dict(PYHEADERS = PYHEADERS or \
+    '/usr/include/python{1}.{2}'.format(
+        sys.version_info.major,
+        sys.version_info.minor
+    )
+)

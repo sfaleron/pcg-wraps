@@ -3,7 +3,7 @@ from subcmd import exthdlr
 
 from streams import stream_check
 from opts import *
-
+import test
 import sys
 
 # strings of zeros or ones of total length equal to the
@@ -37,8 +37,11 @@ with open('../generators.txt', 'r') as fvar:
             continue
 
         opts['PCGx'] = generator
-        opts['SWIGOPTS'] = ('-DGETSET' if GETSET else '') + \
-            (' -DSTREAMS' if STREAMS and stream_check(generator) else '')
+
+        opts['SWIGOPTS'] = SWIGOPTS
+
+        if  STREAMS and stream_check(generator):
+            opts['SWIGOPTS'] += ' -DSTREAMS'
 
         for filename in templates:
             with open(osp.join('../templates', filename), 'r') as fin:
@@ -53,5 +56,10 @@ with open('../generators.txt', 'r') as fvar:
         print('\n', generator)
         os.chdir('..')
         exthdlr(['/bin/sh', 'build/make.sh'])
+
+        test.run(generator)
+        if STREAMS and stream_check(generator):
+            test.run(generator, 137)
+
         os.chdir('build')
         i += 1

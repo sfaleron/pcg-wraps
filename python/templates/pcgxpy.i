@@ -125,9 +125,7 @@ class [PCGx] {
 
         def __ne__(self, other):
             return test_inequality(self, other)
-%}
-#ifdef GETSET
-%pythoncode %{
+
         def __str__(self):
             return get_state(self)
 
@@ -147,16 +145,13 @@ class [PCGx] {
             self.__init__()
             self.set_state(state)
 %}
-#endif
 
 };
 
-#ifdef GETSET
 %inline %{
 
 template <typename T>
 std::string get_state(const T& rng)
-//std::string get_state(const [PCGx]& rng)
 {
     std::ostringstream os;
     os << rng;
@@ -165,7 +160,6 @@ std::string get_state(const T& rng)
 
 template <typename T>
 void set_state(T& rng, const char *state)
-//void set_state([PCGx]& rng, const char *state)
 {
     std::istringstream is(state);
     is >> rng;
@@ -176,8 +170,6 @@ void set_state(T& rng, const char *state)
 
 %template(get_state) get_state<[PCGx]>;
 %template(set_state) set_state<[PCGx]>;
-
-#endif
 
 // operator overloading at module/global level does not translate to python
 // also, the new names are only visible in the Python code
@@ -190,7 +182,6 @@ bool operator!=(const [PCGx]& lhs, const [PCGx]& rhs);
 %rename("subtract") operator-;
 [PCGx]::state_type operator-(const [PCGx]& lhs, const [PCGx]& rhs);
 
-#ifdef GETSET
 %pythoncode %{
 import random
 
@@ -212,23 +203,4 @@ class Random(random.Random):
 
     def setstate(self, state):
         return self._rng.set_state(state)
-
 %}
-#else
-%pythoncode %{
-import random
-
-class Random(random.Random):
-    def __init__(self, *args):
-        self._rng = [PCGx](*args)
-
-    def seed(self, *args):
-        self._rng.seed(*args)
-
-    #def getrandbits(self):
-    #    pass
-
-    def random(self):
-        return self._rng.next_as_float()
-%}
-#endif

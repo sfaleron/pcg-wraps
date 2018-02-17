@@ -2,12 +2,6 @@ from __future__ import print_function
 
 from importlib import import_module
 import pickle
-import sys
-import os
-
-from opts import GETSET
-
-from streams import stream_check
 
 def run(*args):
     pcg  = args[0]
@@ -15,9 +9,6 @@ def run(*args):
 
     m = import_module(pcg)
     constructor = getattr(m, 'generator')
-
-    if GETSET:
-        print(m)
 
     # seeding at or after instantiation
     rng1 = constructor(*args)
@@ -58,20 +49,14 @@ def run(*args):
     two1 = rng2-rng1
     print(one2, two1)
 
-    if GETSET:
-        rng3 = constructor(rng1)
-    else:
-        state = rng1.get_state()
+    state = rng1.get_state()
 
     rng2.advance(one2)
     print(rng1==rng2, rng1!=rng2)
 
     rng2.seed(*args)
 
-    if GETSET:
-        rng1 = rng3
-    else:
-        rng1.set_state(state)
+    rng1.set_state(state)
 
     one2 = rng1-rng2
     two1 = rng2-rng1
@@ -79,10 +64,3 @@ def run(*args):
 
     rng1.backstep(two1)
     print(rng1==rng2, rng1!=rng2)
-
-if __name__ == '__main__':
-    generator = sys.argv[1]
-    run(generator)
-
-    if stream_check(generator):
-        run(generator, 137)
