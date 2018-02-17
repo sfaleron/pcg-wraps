@@ -1,6 +1,7 @@
 # hide the ugly stuff!
 from subcmd import exthdlr
 
+from streams import stream_check
 from opts import *
 
 import sys
@@ -13,12 +14,6 @@ import os.path as osp
 import os
 
 templates = os.listdir('templates')
-
-with open('hasstreams.txt', 'r') as f:
-    hasstreams = set()
-    f.readline()
-    for line in f:
-        hasstreams.add(line.strip())
 
 os.chdir('build')
 
@@ -42,8 +37,8 @@ with open('../generators.txt', 'r') as fvar:
             continue
 
         opts['PCGx'] = generator
-        opts['GETSET'] = 'true' if GETSET else ''
-        opts['STREAMS'] = 'true' if STREAMSON and generator in hasstreams else ''
+        opts['SWIGOPTS'] = ('-DGETSET' if GETSET else '') + \
+            ('-DSTREAMS' if STREAMS and stream_check(generator) else '')
 
         for filename in templates:
             with open(osp.join('../templates', filename), 'r') as fin:

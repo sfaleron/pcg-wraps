@@ -1,3 +1,15 @@
+
+//#define MASK1
+//#define MASK2
+//#define MASK3
+//#define MASK4
+//#define MASK5
+//#define MASK6
+#define MASK7
+
+//#define MINI
+
+
 %module [PCGx]
 
 %typemap(in) [PCGx]::state_type {
@@ -45,8 +57,6 @@
 
 #include "pcg_random.hpp"
 
-//using pcg_extras::operator<<;
-//using pcg_extras::operator>>;
 %}
 
 %inline %{
@@ -83,36 +93,50 @@ void set_state(T& rng, const char *state)
 
 %rename("generator") [PCGx];
 
+#ifdef MINI
+class [PCGx] {
+public:
+%extend {
+}
+};
+#endif
+#ifdef MASK7
 class [PCGx] {
     public:
+#ifdef MASK1
         [PCGx]();
         [PCGx]([PCGx]::state_type seed);
+#endif
 #ifdef STREAMS
         [PCGx]([PCGx]::state_type seed, [PCGx]::state_type stream);
 #endif
+#ifdef MASK2
         [PCGx](const [PCGx]& orig);
-
+#endif
+#ifdef MASK1
         void seed();
         void seed([PCGx]::state_type seed);
+#endif
 #ifdef STREAMS
         void seed([PCGx]::state_type seed, [PCGx]::state_type stream);
 #endif
+#ifdef MASK3
 
         void discard([PCGx]::state_type n);
 
         // "extra"
 
         size_t period_pow2();
-
+#endif
 #ifdef STREAMS
         void set_stream([PCGx]::state_type stream);
         size_t streams_pow2();
 #endif
-
+#ifdef MASK4
         bool wrapped();
         void advance([PCGx]::state_type delta);
         void backstep([PCGx]::state_type delta);
-
+#endif
 %extend {
 #ifndef STREAMS
         size_t streams_pow2() { return 0; }
@@ -120,7 +144,7 @@ class [PCGx] {
         // preserve the API and maximum SWIG warning level,
         // but also stay clean of warnings..
         // sneaky tricks to the rescue!
-
+#ifdef MASK5
         [PCGx]::result_type _min() { return self->min(); }
         [PCGx]::result_type _max() { return self->max(); }
 
@@ -134,6 +158,7 @@ class [PCGx] {
             // The suggested ldexp() approach does not compile for
             // the pcg128 variants
             { return ((double) $self->operator()()) / $self->max(); }
+#endif
 }
 
 %pythoncode %{
@@ -183,10 +208,10 @@ class [PCGx] {
 #endif
 
 };
-
+#endif
+#ifdef MASK6
 // operator overloading at module/global level does not translate to python
 // also, the new names are only visible in the Python code
-
 %rename("test_equality") operator==;
 bool operator==(const [PCGx]& lhs, const [PCGx]& rhs);
 
@@ -195,7 +220,8 @@ bool operator!=(const [PCGx]& lhs, const [PCGx]& rhs);
 
 %rename("subtract") operator-;
 [PCGx]::state_type operator-(const [PCGx]& lhs, const [PCGx]& rhs);
-
+#endif
+#ifdef GETSET
 %pythoncode %{
 import random
 
@@ -211,15 +237,29 @@ class Random(random.Random):
 
     def random(self):
         return self._rng.next_as_float()
-%}
 
-#ifdef GETSET
-%pythoncode %{
     def getstate(self):
         return self._rng.get_state()
 
     def setstate(self, state):
         return self._rng.set_state(state)
 
+%}
+#else
+%pythoncode %{
+import random
+
+class Random(random.Random):
+    def __init__(self, *args):
+        self._rng = [PCGx](*args)
+
+    def seed(self, *args):
+        self._rng.seed(*args)
+
+    #def getrandbits(self):
+    #    pass
+
+    def random(self):
+        return self._rng.next_as_float()
 %}
 #endif
