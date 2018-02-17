@@ -3,6 +3,9 @@
 # The "extended" generators are not supported. There is also no support
 # for custom generators with alternate permutation schemes or constants.
 
+# There is partial support for generators with 128-bit state, see
+# incomplete.txt for the list and explanation.
+
 # The rest of the "canonical" (listed on the documentation page of the
 # website: http://www.pcg-random.org/using-pcg-cpp.html) generators are
 # supported. They are listed in the same order as on the website, in two

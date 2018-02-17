@@ -1,20 +1,22 @@
 
 %module [PCGx]
 
+%include <stdint.i>
+
 %typemap(in) [PCGx]::state_type {
-  $1 = PyLong_AsUnsignedLong($input);
+  $1 = PyLong_AsUnsignedLongLong($input);
 }
 
 %typemap(in) [PCGx]::result_type {
-  $1 = PyLong_AsUnsignedLong($input);
+  $1 = PyLong_AsUnsignedLongLong($input);
 }
 
 %typemap(out) [PCGx]::state_type {
-  $result = PyLong_FromUnsignedLong($1);
+  $result = PyLong_FromUnsignedLongLong($1);
 }
 
 %typemap(out) [PCGx]::result_type {
-  $result = PyLong_FromUnsignedLong($1);
+  $result = PyLong_FromUnsignedLongLong($1);
 }
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_INTEGER) [PCGx]::state_type {

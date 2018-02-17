@@ -12,9 +12,6 @@ with open('hasstreams.txt', 'r') as f:
     for line in f:
         hasstreams.add(line.strip())
 
-def stream_check(s):
-    return s in hasstreams
-
 
 # strings of zeros or ones of total length equal to the
 # number of generators (12, 18 with 128 bit state generators)
@@ -50,7 +47,7 @@ with open('../generators.txt', 'r') as fvar:
 
         opts['SWIGOPTS'] = SWIGOPTS
 
-        if  STREAMS and stream_check(generator):
+        if  generator in hasstreams:
             opts['SWIGOPTS'] += ' -DSTREAMS'
 
         if  GETSET:
@@ -71,7 +68,7 @@ with open('../generators.txt', 'r') as fvar:
         exthdlr(['/bin/sh', 'build/make.sh'])
 
         test.run(generator)
-        if STREAMS and stream_check(generator):
+        if generator in hasstreams:
             test.run(generator, 137)
 
         os.chdir('build')

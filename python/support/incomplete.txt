@@ -1,0 +1,19 @@
+# These streams will compile if the GETSET option is set to False. This
+# disables support for getting and setting generator state directly, which
+# also breaks the documented interface for subclasses of random.Random, so
+# it is renamed to AlmostRandom. You also may experience spurious overflow
+# errors. Enable at your own risk (or fix my typemaps)!
+
+# supports multiple streams
+
+pcg64
+
+pcg128_once_insecure
+
+# single stream only
+
+pcg64_oneseq
+pcg64_unique
+pcg64_fast
+
+pcg128_oneseq_once_insecure

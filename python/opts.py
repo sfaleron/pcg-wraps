@@ -1,12 +1,17 @@
 import sys
 
+# support for serialization
+# does not work for generators with 128 bits of state
 GETSET    = True
-STREAMS   = True
+
+# must be a valid string
 SWIGOPTS  = ''
+
 PYHEADERS = '/usr/include/python3.6m' if sys.version_info.major==3 else None
 
-import sys
-
-# sets a useful default if evaluates as false
-opts = dict(PYHEADERS = PYHEADERS or \
+# set include directory to a useful default if it evaluates as false
+opts = dict(
+    INCOMPLETE='False' if GETSET else 'True',
+    PYHEADERS = PYHEADERS or \
     '/usr/include/python{0}.{1}'.format(*sys.version_info))
+

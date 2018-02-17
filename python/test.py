@@ -76,5 +76,8 @@ def run(*args):
     two1 = rng2-rng1
     print(one2, two1)
 
-    rng1.backstep(period-two1)
-    print(rng1==rng2, rng2==rng1)
+    #if 
+    #    rng1.backstep(period-two1)
+    #    print(rng1==rng2, rng2==rng1)
+    #except OverflowError:
+    #    print('period overflows C type')
