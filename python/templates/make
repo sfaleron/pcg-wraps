@@ -1,7 +1,7 @@
 
-[SWIGCMD] -c++ -python [SWIGOPTS] -outdir [PCGx] -o pcggen_wrap.cxx [PCGx]/pcgxpy.i
+[SWIG] -c++ -python [SWIGFLAGS] -outdir [PCGx] -o pcggen_wrap.cxx [PCGx]/pcgxpy.i
 
-[CXX] -Wall -O2 -fPIC -std=c++11 -I../[PCGHEADERS] -o pcggen_wrap.o \
+[CXX] [CXXFLAGS] -std=c++11 -I../[PCGHEADERS] -o pcggen_wrap.o \
     -I[PYHEADERS] -c pcggen_wrap.cxx
 
 [CXX] -shared pcggen_wrap.o -o [PCGx]/_[PCGx].so
