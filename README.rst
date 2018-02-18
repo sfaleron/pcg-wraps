@@ -3,9 +3,8 @@ Various `SWIG`_ bindings to the `PCG`_ suite of psuedo-random number generators.
 
 Python bindings can be found here, and Java support is planned.
 
-To build, you'll need the contents of the include directory from `pcg-cpp`_. The repository includes a reference back there as a submodule, so if you've cloned this repository, you can get that folded in neatly with a couple of git commands:
+To build, you'll need the contents of the include directory from `pcg-cpp`_. The repository includes a reference back there as a submodule, so if you've cloned this repository, you can get that folded in neatly with a couple of git commands::
 
-::
   git submodule init
   git submodule update
 
