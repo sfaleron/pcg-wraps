@@ -1,5 +1,10 @@
+
+from __future__ import print_function
+
 import os.path as osp
+import subprocess
 import shutil
+import shlex
 import sys
 import os
 
@@ -10,18 +15,15 @@ d=osp.abspath(osp.dirname(__file__))
 sys.path.append(d)
 print(d)
 
-# hide the ugly stuff!
-from subcmd import exthdlr
-
 from opts import *
 import pcgtests as test
 
 with open(osp.join('support', 'hasstreams.txt'), 'r') as f:
     hasstreams = set()
     f.readline()
+
     for line in f:
         hasstreams.add(line.strip())
-
 
 templates = os.listdir('templates')
 
@@ -49,15 +51,15 @@ with open('../generators.txt', 'r') as fgens:
         if masked:
             continue
 
-        opts['PCGx'] = generator
+        substs['PCGx'] = generator
 
-        opts['SWIGOPTS'] = SWIGOPTS
+        substs['SWIGOPTS'] = SWIGOPTS
 
         if  generator in hasstreams:
-            opts['SWIGOPTS'] += ' -DSTREAMS'
+            substs['SWIGOPTS'] += ' -DSTREAMS'
 
         if  GETSET:
-            opts['SWIGOPTS'] += ' -DGETSET'
+            substs['SWIGOPTS'] += ' -DGETSET'
 
         os.mkdir(generator)
 
@@ -68,14 +70,33 @@ with open('../generators.txt', 'r') as fgens:
             with open(osp.join('../templates', filename), 'r') as fin:
                 with open(osp.join(generator, filename), 'w') as fout:
                     s = fin.read()
-                    for key, value in opts.items():
+                    for key, value in substs.items():
                         s = s.replace('[{}]'.format(key), value)
 
                     fout.write(s)
 
-        print(opts)
+        print(substs)
         print('\n', generator)
-        exthdlr(['/bin/sh', osp.join(generator, 'make.sh')])
+
+        with open(osp.join(generator, 'make'), 'r') as fmake:
+            append = False
+            cmds = []
+
+            for line in fmake:
+                cmd = line.strip()
+
+                if not cmd:
+                    continue
+
+                if append:
+                    cmds[-1] += cmd
+                else:
+                    cmds.append(cmd)
+
+                append = cmd.endswith('\\')
+
+        for cmd in cmds:
+            subprocess.check_call(shlex.split(cmd))
 
         m = import_module('pcgrng.'+generator)
 
@@ -85,10 +106,8 @@ with open('../generators.txt', 'r') as fgens:
             test.run(m, 137)
 
         for filename in templates:
-            os.remove(osp.join(generator, filename))
+            if not filename.startswith('__'):
+                os.remove(osp.join(generator, filename))
 
         for filename in ['pcggen_wrap.'+i for i in ('cxx', 'o')]:
-            if not filename.startswith('__'):
-                os.remove(filename)
-
-
+            os.remove(filename)

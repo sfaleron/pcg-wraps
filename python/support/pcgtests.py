@@ -52,7 +52,7 @@ def run(*args):
     two1 = rng2-rng1
     period = 2**rng1.period_pow2()
 
-    print(one2+two1==period)
+    print(one2,two1,period)
 
     if GETSET:
         state = rng1.get_state()
