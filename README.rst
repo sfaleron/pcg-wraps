@@ -8,7 +8,7 @@ To build, you'll need the contents of the include directory from `pcg-cpp`_. The
   git submodule init
   git submodule update
 
-This makes it easier to stay up-to-date with pgc-cpp, and also provides some data that could be useful for automated testing, when that gets implemented.
+This makes it easier to stay up-to-date with pcg-cpp, and also provides some data that could be useful for automated testing, when that gets implemented.
 
 .. _PCG: http://www.pcg-random.org/
 .. _SWIG: http://www.swig.org/
