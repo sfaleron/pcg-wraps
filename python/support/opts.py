@@ -1,14 +1,18 @@
-import sys
-
-PY3 = sys.version_info[0] >= 3
 
 with open('opts.cfg', 'r') as f:
     exec(f.read())
 
+if not PYHEADERS:
+    try:
+        import sysconfig
+        PYHEADERS = sysconfig.get_path('include')
+    except ImportError:
+        import sys
+        PYHEADERS = '/usr/include/python{0}.{1}'.format(*sys.version_info)
+
 # set include directory to a useful default if it evaluates as false
 substs = dict(
     INCOMPLETE = 'False' if GETSET else 'True',
-    SWIGCMD = SWIGCMD, CXX = CXX,
+    SWIG = SWIG, CXX = CXX, CXXOPTS = CXXOPTS,
     PCGHEADERS = PCGHEADERS,
-    PYHEADERS  = PYHEADERS or \
-    '/usr/include/python{0}.{1}'.format(*sys.version_info))
+    PYHEADERS  = PYHEADERS)
