@@ -1,7 +1,7 @@
 
 Various `SWIG`_ bindings to the `PCG`_ suite of psuedo-random number generators. Not all features are necessarily available in a given set of bindings, and the available subset will vary from language to language. See the READMEs in each subdirectory for details.
 
-Python bindings can be found here, and Java support is planned.
+Python bindings can be found here. There are no plans to support other languages, but Java would be the likely next one.
 
 To build, you'll need the contents of the include directory from `pcg-cpp`_. The repository includes a reference back there as a submodule, so if you've cloned this repository, you can get that folded in neatly with a couple of git commands::
 
